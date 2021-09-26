@@ -29,7 +29,7 @@ style.innerHTML = `
       position: fixed;
       top: 2px;
       right: 5px;
-      z-index: 2000;
+      z-index: 50000;
       width: 300px;
       height: 280px;
       paddiing: 10px;
