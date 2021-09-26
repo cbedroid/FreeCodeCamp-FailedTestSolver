@@ -10,16 +10,22 @@
  */
 
 // inject FreeCode Script if not loaded
-const fcc_is_loaded = document.querySelector(
-  "script[src='https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js']"
-);
-
-if (!fcc_is_loaded) {
-  const fcc_script = document.createElement("script");
-  fcc_script.src =
-    "https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js";
-  document.getElementsByTagName("body")[0].appendChild(fcc_script);
-}
+(function injectFCCScript() {
+  const last_script = document.querySelectorAll("script");
+  const fcc_is_loaded = document.querySelector(
+    "script[src='https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js']"
+  );
+  console.log({ fcc_is_loaded });
+  if (!fcc_is_loaded) {
+    console.log("Loading FCC Suite Test Script");
+    const fcc_script = document.createElement("script");
+    fcc_script.src =
+      "https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js";
+    document
+      .getElementsByTagName("body")[0]
+      .insertBefore(fcc_script, last_script[last_script.length || 0]);
+  }
+})();
 
 // inject css style
 var style = document.createElement("style");
@@ -52,12 +58,15 @@ style.innerHTML = `
       border-radius: 2px;      
       overflow: hidden;
     } 
+
    #freecodecamp_result.hidden *:not(.content-wrapper,.btn-wrapper, .btn){
     display: none;
   } 
+
   #freecodecamp_result #content-wrapper{ 
     position: relative;
   }
+
   #freecodecamp_result .btn-wrapper{ 
     position: absolute;
     top: 2px;
@@ -71,6 +80,7 @@ style.innerHTML = `
     height: 100%;
     margin: auto;
   }
+
   #freecodecamp_result .btn{
       display: none;
       opacity: 1;
@@ -92,9 +102,11 @@ style.innerHTML = `
   #freecodecamp_result #close_btn::before {
       content: '\\2613';
   }
+
   #freecodecamp_result .btn-wrapper #open_btn::before{
     content: '\\2630';
   }
+ 
   #freecodecamp_result .title{ 
     font-weight: 700;
     text-align: center;
@@ -137,6 +149,7 @@ style.innerHTML = `
     background: #e9eabc;
     padding: 4px;
    }
+   
   #freecodecamp_result #suite_footer small {
     color:333;
     font-size: .75em;
@@ -152,10 +165,12 @@ style.innerHTML = `
   #freecodecamp_result #suite_footer small a:hover{
     color: #00f;
   }
-  #freecodecamp_result .loader-wrapper {
-    display: none;
-  }
-  #freecodecamp_result .loader-wrapper.active {
+
+#freecodecamp_result .loader-wrapper {
+  display: none;
+}
+#freecodecamp_result .loader-wrapper.active {
+
     position: absolute;
     top: 0;
     left: 0;
@@ -163,32 +178,31 @@ style.innerHTML = `
     place-items:center;
     width: 100%;
     height: 100%;
-  }
-  #freecodecamp_result .loader {
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #3498db; /* Blue */
-    border-radius: 50%;
-    display: block;
-    width: 100px;
-    height: 100px;
-    animation: spin 1s linear infinite;
-  }
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+}
+#freecodecamp_result .loader {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #3498db; /* Blue */
+  border-radius: 50%;
+  display: block;
+  width: 100px;
+  height: 100px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
   `;
 document.getElementsByTagName("head")[0].appendChild(style);
 
-/* Main Program */
+// Main
 let root = document.getElementById("fcc_test_suite_wrapper").shadowRoot;
 let suit_ui = root.querySelector(".fcc_test_ui");
 
 let fcc_run_button = suit_ui.querySelector(
   "#fcc_test_message-box-rerun-button"
 );
-
-/* Initialization */
 (function init() {
   createResultElement();
   let test_runner_btn = document.getElementById("test_runner");
@@ -207,7 +221,6 @@ let fcc_run_button = suit_ui.querySelector(
 
 function createResultElement() {
   const markup = `
-    <div id="freecodecamp_result" class=""> 
      <div class="content-wrapper">
        <div class="loader-wrapper">
         <div class="loader"></div>
@@ -230,7 +243,7 @@ function createResultElement() {
        <a href="https://github.com/cbedroid/" target="_blank">cbedroid</a>
       </small>
       <small>
-       <a href="https://github.com/cbedroid/FreeCodeCamp-FailedTestSolver/" target="_blank">
+       <a href="https://github.com/cbedroid/freecodecamp_suite_mod/" target="_blank">
         <svg height="20" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="20" data-view-component="true" class="octicon octicon-mark-github v-align-middle">
          <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
         </svg>
@@ -238,9 +251,9 @@ function createResultElement() {
        </a>
       </small>
     </div>
-   </div>
    `;
   const result_element = document.createElement("div");
+  result_element.id = "freecodecamp_result";
   result_element.innerHTML = markup;
   document.getElementsByTagName("body")[0].appendChild(result_element);
 
@@ -268,9 +281,10 @@ function showFailedTests() {
   const failed_results = suit_test.querySelectorAll(".test.fail");
   const result_list = document.getElementById("failure_list");
 
-  // Verify failed result and show current status
+  // Verfiy  failed result and show current status
+  console.log({ failed_results });
   if (failed_results.length > 0) {
-    // show Test Passed
+    // Show Test Passed
     result_list.innerHTML = `
     <li style="color:red;text-align:center;font-weight: 700; margin:4px 0px;">
      ${failed_results.length} of ${total_tests} Tests Failed!
@@ -279,10 +293,9 @@ function showFailedTests() {
   } else {
     // display all tests passed
     result_list.innerHTML = `
-      <li style="color:green;text-align:center;font-weight:700;margin:4px 0px;">All ${total_tests} Tests Passed!</li>
-      `;
+     <li style="color:green;text-align:center;font-weight:700;margin:4px 0px;">All ${total_tests} Tests Passed!</li>
+     `;
   }
-
   // append failed results to list
   failed_results.forEach(function (result) {
     const li = document.createElement("li");
