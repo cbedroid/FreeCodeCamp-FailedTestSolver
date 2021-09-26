@@ -9,192 +9,199 @@
  * @date: Sept 26, 2021
  */
 
-// inject FreeCode Script if not loaded
+/* Show FreeCode Camp  Responsive HTML Error
+   
+ */
+
+/* Injects css style */
+(function injectStyle() {
+  var style = document.createElement("style");
+  style.type = "text/css";
+  style.innerHTML = `
+    #freecodecamp_result{ 
+        position: fixed;
+        top: 2px;
+        right: 5px;
+        z-index: 50000;
+        width: 300px;
+        height: 280px;
+        margin: 10px;
+        color: #000;
+        background: #d0d0d5;
+        box-shadow: 2px 2px 8px rgba(0,0,0,.4);
+        border: 1px solid rgba(0,0,0,.4);
+        border-radius: 8px;
+        transition: .3s ease-in-out;
+        overflow: auto;
+     }
+      #freecodecamp_result.hidden{
+        dispay: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        font-size: 1.15em;
+        background: transparent;
+        border-radius: 2px;      
+        overflow: hidden;
+      } 
+
+     #freecodecamp_result.hidden *:not(.content-wrapper,.btn-wrapper, .btn){
+      display: none;
+    } 
+
+    #freecodecamp_result #content-wrapper{ 
+      position: relative;
+    }
+
+    #freecodecamp_result .btn-wrapper{ 
+      position: absolute;
+      top: 2px;
+      left: 2px;
+    }
+    #freecodecamp_result.hidden .btn-wrapper{ 
+      position: absolute;
+      top: -2px;
+      left:0;
+      display: block;
+      height: 100%;
+      margin: auto;
+    }
+
+    #freecodecamp_result .btn{
+        display: none;
+        opacity: 1;
+        width: fit-content;
+        max-height: 20px;
+        padding: 3px;
+        font-size: 1.25em;
+        font-weight: 700;
+        color: #fff;
+        background: transparent;
+        border: none;
+        outline: none;
+        text-shadow: 2px 2px 2px rgba(0,0,0,.5);
+        transition: .2s ease-in-out;
+    }
+    #freecodecamp_result .btn.active{
+      display: block;
+    }
+    #freecodecamp_result #close_btn::before {
+        content: '\\2613';
+    }
+
+    #freecodecamp_result .btn-wrapper #open_btn::before{
+      content: '\\2630';
+    }
+
+    #freecodecamp_result .title{ 
+      font-weight: 700;
+      text-align: center;
+      padding: 5px;
+      color: #fff;
+      background: #0a0a23;
+      border-bottom: 2px solid #000;
+    }
+    #freecodecamp_result #test_runner{
+      font-weight: 700;
+      margin-left: 3px;
+      color: #fff;
+      background:#0a0a3a;
+      border-radius: 4px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,.4);
+    } 
+    #freecodecamp_result #test_runner:hover{
+      background:#0a3a82;
+    }
+    #freecodecamp_result #failure_list{
+     display: block;
+     min-height: 145px;
+     height: 100%;
+     padding: 5px 0px 4px;
+    }
+    #freecodecamp_result .result-item{
+      list-style: none;
+      color: #000;
+      font-weight: 500;
+      line-height: 1em;
+      padding: 12px 8px;
+      border-bottom: 1px solid #000;
+    }
+    #freecodecamp_result .result-item:nth-child(even){
+      background: #fff;
+    }
+    #freecodecamp_result #suite_footer{
+      width:100%;
+      text-align:center;
+      background: #e9eabc;
+      padding: 4px;
+     }
+
+    #freecodecamp_result #suite_footer small {
+      color:333;
+      font-size: .75em;
+      font-weight:400;
+      margin: 2px 6px;
+      padding: 6px;
+    }
+    #freecodecamp_result #suite_footer small a{
+      transition: .2s ease-in;
+      font-weight: 700;
+      color: #0a0a23;
+    }
+    #freecodecamp_result #suite_footer small a:hover{
+      color: #00f;
+    }
+
+  #freecodecamp_result .loader-wrapper {
+    display: none;
+  }
+  #freecodecamp_result .loader-wrapper.active {
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: grid;
+      place-items:center;
+      width: 100%;
+      height: 100%;
+  }
+  #freecodecamp_result .loader {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    display: block;
+    width: 100px;
+    height: 100px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }`;
+
+  document.getElementsByTagName("head")[0].appendChild(style);
+})();
+
+/* Inject FreeCode Script if not loaded */
 (function injectFCCScript() {
   const last_script = document.querySelectorAll("script");
   const fcc_is_loaded = document.querySelector(
     "script[src='https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js']"
   );
   console.log({ fcc_is_loaded });
-  if (!fcc_is_loaded) {
-    console.log("Loading FCC Suite Test Script");
-    const fcc_script = document.createElement("script");
-    fcc_script.src =
-      "https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js";
-    document
-      .getElementsByTagName("body")[0]
-      .insertBefore(fcc_script, last_script[last_script.length || 0]);
-  }
+
+  if (fcc_is_loaded) return;
+
+  console.log("Loading FCC Suite Test Script");
+  const fcc_script = document.createElement("script");
+  fcc_script.src =
+    "https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js";
+  fcc_script.on_load = init(); // Run Main initialization.
+  document
+    .getElementsByTagName("body")[0]
+    .insertBefore(fcc_script, last_script[last_script.length || 0]);
 })();
-
-// inject css style
-var style = document.createElement("style");
-style.type = "text/css";
-style.innerHTML = `
-  #freecodecamp_result{ 
-      position: fixed;
-      top: 2px;
-      right: 5px;
-      z-index: 50000;
-      width: 300px;
-      height: 280px;
-      paddiing: 10px;
-      margin: 10px;
-      color: #000;
-      background: #d0d0d5;
-      box-shadow: 2px 2px 8px rgba(0,0,0,.4);
-      border: 1px solid rgba(0,0,0,.4);
-      border-radius: 8px;
-      transition: .3s ease-in-out;
-      overflow: auto;
-   }
-    #freecodecamp_result.hidden{
-      dispay: grid;
-      place-items: center;
-      width: 32px;
-      height: 32px;
-      font-size: 1.15em;
-      background: transparent;
-      border-radius: 2px;      
-      overflow: hidden;
-    } 
-
-   #freecodecamp_result.hidden *:not(.content-wrapper,.btn-wrapper, .btn){
-    display: none;
-  } 
-
-  #freecodecamp_result #content-wrapper{ 
-    position: relative;
-  }
-
-  #freecodecamp_result .btn-wrapper{ 
-    position: absolute;
-    top: 2px;
-    left: 2px;
-  }
-  #freecodecamp_result.hidden .btn-wrapper{ 
-    position: absolute;
-    top: -2px;
-    left:0;
-    display: block;
-    height: 100%;
-    margin: auto;
-  }
-
-  #freecodecamp_result .btn{
-      display: none;
-      opacity: 1;
-      width: fit-content;
-      max-height: 20px;
-      padding: 3px;
-      font-size: 1.25em;
-      font-weight: 700;
-      color: #fff;
-      background: transparent;
-      border: none;
-      outline: none;
-      text-shadow: 2px 2px 2px rgba(0,0,0,.5);
-      transition: .2s ease-in-out;
-  }
-  #freecodecamp_result .btn.active{
-    display: block;
-  }
-  #freecodecamp_result #close_btn::before {
-      content: '\\2613';
-  }
-
-  #freecodecamp_result .btn-wrapper #open_btn::before{
-    content: '\\2630';
-  }
- 
-  #freecodecamp_result .title{ 
-    font-weight: 700;
-    text-align: center;
-    padding: 5px;
-    color: #fff;
-    background: #0a0a23;
-    border-bottom: 2px solid #000;
-  }
-  #freecodecamp_result #test_runner{
-    font-weight: 700;
-    margin-left: 3px;
-    color: #fff;
-    background:#0a0a3a;
-    border-radius: 4px;
-    box-shadow: 2px 2px 8px rgba(0,0,0,.4);
-  } 
-  #freecodecamp_result #test_runner:hover{
-    background:#0a3a82;
-  }
-  #freecodecamp_result #failure_list{
-   display: block;
-   min-height: 145px;
-   height: 100%;
-   padding: 5px 0px 4px;
-  }
-  #freecodecamp_result .result-item{
-    list-style: none;
-    color: #000;
-    font-weight: 500;
-    line-height: 1em;
-    padding: 12px 8px;
-    border-bottom: 1px solid #000;
-  }
-  #freecodecamp_result .result-item:nth-child(even){
-    background: #fff;
-  }
-  #freecodecamp_result #suite_footer{
-    width:100%;
-    text-align:center;
-    background: #e9eabc;
-    padding: 4px;
-   }
-   
-  #freecodecamp_result #suite_footer small {
-    color:333;
-    font-size: .75em;
-    font-weight:400;
-    margin: 2px 6px;
-    padding: 6px;
-  }
-  #freecodecamp_result #suite_footer small a{
-    transition: .2s ease-in;
-    font-weight: 700;
-    color: #0a0a23;
-  }
-  #freecodecamp_result #suite_footer small a:hover{
-    color: #00f;
-  }
-
-#freecodecamp_result .loader-wrapper {
-  display: none;
-}
-#freecodecamp_result .loader-wrapper.active {
-
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: grid;
-    place-items:center;
-    width: 100%;
-    height: 100%;
-}
-#freecodecamp_result .loader {
-  border: 8px solid #f3f3f3; /* Light grey */
-  border-top: 8px solid #3498db; /* Blue */
-  border-radius: 50%;
-  display: block;
-  width: 100px;
-  height: 100px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-  `;
-document.getElementsByTagName("head")[0].appendChild(style);
 
 // Main
 let root = document.getElementById("fcc_test_suite_wrapper").shadowRoot;
@@ -203,7 +210,8 @@ let suit_ui = root.querySelector(".fcc_test_ui");
 let fcc_run_button = suit_ui.querySelector(
   "#fcc_test_message-box-rerun-button"
 );
-(function init() {
+
+function init() {
   createResultElement();
   let test_runner_btn = document.getElementById("test_runner");
   let loader = document.querySelector(".loader-wrapper");
@@ -217,7 +225,7 @@ let fcc_run_button = suit_ui.querySelector(
       loader.classList.remove("active");
     }, 1000);
   });
-})();
+}
 
 function createResultElement() {
   const markup = `
