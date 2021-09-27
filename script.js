@@ -11,8 +11,9 @@
 /* Show FreeCode Camp  Responsive HTML Error*/
 
 // Github Repo File Paths
-const REPO_BASE_URL="https://github.com/cbedroid/FreeCodeCamp-FailedTestSolver"
-const REPO_GHP_URL="https://cbedroid.github.io/FreeCodeCamp-FailedTestSolver"
+const REPO_BASE_URL =
+  "https://github.com/cbedroid/FreeCodeCamp-FailedTestSolver";
+const REPO_GHP_URL = "https://cbedroid.github.io/FreeCodeCamp-FailedTestSolver";
 const STYLESHEET = `${REPO_GHP_URL}/styles.css`;
 const HTML_FILE = `${REPO_GHP_URL}/content.html`;
 
@@ -53,18 +54,20 @@ const HTML_FILE = `${REPO_GHP_URL}/content.html`;
 
 function fetchFile(url) {
   var request = new XMLHttpRequest();
-  request.open( "GET", url true);
+  request.open("GET", url, true);
   request.send(null);
-  request.onreadystatechange = function () {
-    if (request.readyState === 4 && request.status === 200) {
-      return request.responseText;
-    }
-  };
+  return new Promise(function (resolve, reject) {
+    request.onreadystatechange = async function (resp) {
+      resp = await request.responseText;
+      if (request.readyState === 4 && request.status === 200) {
+        resolve(resp);
+      }
+    };
+  });
 }
 
 function runMain() {
   buildMarkup();
-  document.querySelector("#repo_link").href=REPO_BASE_URL
   let root = document.getElementById("fcc_test_suite_wrapper").shadowRoot;
   let suit_ui = root.querySelector(".fcc_test_ui");
   let fcc_run_button = suit_ui.querySelector(
@@ -106,20 +109,20 @@ function runMain() {
    */
   function buildMarkup() {
     const main_element = document.createElement("div");
-    const markup = fetchFile(HTML_FILE);
-    main_element.id = "freecodecamp_mod";
-    if (markup){
-      main_element.innerHTML = markup;
-    }else{
-      main_element.innerHTML = `
+    fetchFile(HTML_FILE).then((markup) => {
+      main_element.id = "freecodecamp_mod";
+      if (markup) {
+        main_element.innerHTML = markup;
+      } else {
+        main_element.innerHTML = `
         <div class="error" style="text-align:center;">
           <h3 style="font-weight:bold;color:red">FCC_ERROR: HTML content was not found</h3>
           <small>If this issue persists, submit an issue <a href="${REPO_BASE_URL}/issues/">here<a/><small>  
         </div>
         `;
-    }
-    
-    document.getElementsByTagName("body")[0].appendChild(main_element);
+      }
+      document.getElementsByTagName("body")[0].appendChild(main_element);
+    });
   }
 
   function attachSelector() {
