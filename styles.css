@@ -65,10 +65,10 @@
   display: block;
 }
 #freecodecamp_mod #close_btn::before {
-  content: "\\2613";
+  content: "\2613";
 }
 #freecodecamp_mod .btn-wrapper #open_btn::before {
-  content: "\\2630";
+  content: "\2630";
 }
 
 #freecodecamp_mod .title {
