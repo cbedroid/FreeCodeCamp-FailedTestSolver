@@ -11,6 +11,7 @@
 /* Show FreeCode Camp  Responsive HTML Error*/
 
 // Github Repo File Paths
+var test;
 const REPO_BASE_URL =
   "https://github.com/cbedroid/FreeCodeCamp-FailedTestSolver";
 const REPO_GHP_URL = "https://cbedroid.github.io/FreeCodeCamp-FailedTestSolver";
@@ -52,6 +53,10 @@ const HTML_FILE = `${REPO_GHP_URL}/content.html`;
     .insertBefore(fcc_script, last_script[last_script.length || 0]);
 })();
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function fetchFile(url) {
   var request = new XMLHttpRequest();
   request.open("GET", url, true);
@@ -66,8 +71,9 @@ function fetchFile(url) {
   });
 }
 
-function runMain() {
+async function runMain() {
   buildMarkup();
+  await sleep(500);
   let root = document.getElementById("fcc_test_suite_wrapper").shadowRoot;
   let suit_ui = root.querySelector(".fcc_test_ui");
   let fcc_run_button = suit_ui.querySelector(
@@ -76,7 +82,7 @@ function runMain() {
   let runner_container = document.getElementsByClassName("runner-container");
 
   (function init() {
-    let test_runner_btn = document.getElementById("test_runner_btn");
+    let test_runner_btn = document.querySelector("#test_runner_btn");
     let loader = document.querySelector(".loader-wrapper");
     const freecodecamp_mod = document.getElementById("freecodecamp_mod");
     const btns = freecodecamp_mod.querySelectorAll(".btn");
@@ -110,6 +116,7 @@ function runMain() {
   function buildMarkup() {
     const main_element = document.createElement("div");
     fetchFile(HTML_FILE).then((markup) => {
+      test = markup;
       main_element.id = "freecodecamp_mod";
       if (markup) {
         main_element.innerHTML = markup;
@@ -117,7 +124,7 @@ function runMain() {
         main_element.innerHTML = `
         <div class="error" style="text-align:center;">
           <h3 style="font-weight:bold;color:red">FCC_ERROR: HTML content was not found</h3>
-          <small>If this issue persists, submit an issue <a href="${REPO_BASE_URL}/issues/">here<a/><small>  
+          <small>If this issue persists, submit an issue <a href="${REPO_BASE_URL}/issues/">here<a/><small>
         </div>
         `;
       }
@@ -146,6 +153,7 @@ function runMain() {
       suite_selector.value = this.value;
       suite_selector.dispatchEvent(event);
     });
+
     runner_container[0].prepend(mod_fcc_selector);
   }
   /*
@@ -184,22 +192,22 @@ function runMain() {
     let suite_test = root.querySelectorAll(".fcc_test_ui")[1];
     const total_tests = suite_test.querySelectorAll(".test").length;
     const failed_results = suite_test.querySelectorAll(".test.fail");
+    const feedback = document.getElementById("fcc_mod_feedback");
     const result_list = document.getElementById("failure_list");
 
     // Verfiy  failed result and show current status
     if (failed_results.length > 0) {
       // Show Test Passed
-      result_list.innerHTML = `
-      <li style="color:red;text-align:center;font-weight: 700; margin:4px 0px;">
-       ${failed_results.length} of ${total_tests} Tests Failed!
-      </li>
+      feedback.innerHTML = `
+       ${total_tests - failed_results.length} of ${total_tests} Tests Passed!
       `;
+      feedback.classList = "error";
     } else {
       // display all tests passed
-      result_list.innerHTML = `
-       <li style="color:green;text-align:center;font-weight:700;margin:4px 0px;">All ${total_tests} Tests Passed!</li>
-       `;
+      feedback.innerHTML = `All ${total_tests} Tests Passed!`;
+      feedback.classList = "success";
     }
+
     // append failed results to list
     failed_results.forEach(function (result) {
       const li = document.createElement("li");

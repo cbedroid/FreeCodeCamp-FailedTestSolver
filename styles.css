@@ -65,10 +65,10 @@
   display: block;
 }
 #freecodecamp_mod #close_btn::before {
-  content: "\2613";
+  content: "\\2613";
 }
 #freecodecamp_mod .btn-wrapper #open_btn::before {
-  content: "\2630";
+  content: "\\2630";
 }
 
 #freecodecamp_mod .title {
@@ -86,7 +86,6 @@
   display: block;
   width: 100%;
 }
-
 #freecodecamp_mod #test_runner_btn {
   font-weight: 700;
   margin-left: 3px;
@@ -98,6 +97,12 @@
 }
 #freecodecamp_mod #test_runner_btn:hover {
   background: #0a3a82;
+}
+#freecodecamp_mod #fcc_mod_feedback.success {
+  color: green;
+}
+#freecodecamp_mod #fcc_mod_feedback.error {
+  color: red;
 }
 #freecodecamp_mod #failure_list {
   display: block;
@@ -117,12 +122,14 @@
   background: #fff;
 }
 #freecodecamp_mod #suite_footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   text-align: center;
   background: #e9eabc;
   padding: 4px;
 }
-
 #freecodecamp_mod #suite_footer small {
   color: 333;
   font-size: 0.75em;
