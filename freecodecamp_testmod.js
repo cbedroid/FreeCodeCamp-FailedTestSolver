@@ -1,11 +1,10 @@
 /**
- * @title: FreeCodeCamp SuiteMod
+ * @title: FreeCodeCamp Test Suite Hack
  * @summary: FreeCodeCamp javascript injection script that finds and display
  *               all failed test suites and display all failed tests inside the
  *               project web page.
  *
  * @author: Cornelius Brooks - cbedroid1614@gmail.com
- *
  * @date: Sept 26, 2021
  */
 
@@ -21,8 +20,8 @@
         top: 2px;
         right: 5px;
         z-index: 50000;
-        width: 300px;
-        height: 280px;
+        width: 320px;
+        height: 300px;
         margin: 10px;
         color: #000;
         background: #d0d0d5;
@@ -99,27 +98,36 @@
       background: #0a0a23;
       border-bottom: 2px solid #000;
     }
-    #freecodecamp_mod #test_runner{
+    #freecodecamp_mod .runner-container{
+      padding: 3px;
+    }
+    #freecodecamp_mod .mod_selector{
+      display: block;
+      width: 100%;
+    }
+
+    #freecodecamp_mod #test_runner_btn{
       font-weight: 700;
       margin-left: 3px;
       color: #fff;
       background:#0a0a3a;
       border-radius: 4px;
       box-shadow: 2px 2px 8px rgba(0,0,0,.4);
+      transform: translate(0, -10px);
     } 
-    #freecodecamp_mod #test_runner:hover{
+    #freecodecamp_mod #test_runner_btn:hover{
       background:#0a3a82;
     }
     #freecodecamp_mod #failure_list{
      display: block;
-     min-height: 145px;
+     min-height: 113px;
      height: 100%;
      padding: 5px 0px 4px;
     }
     #freecodecamp_mod .result-item{
       list-style: none;
       color: #000;
-      font-weight: 500;
+      font-weight: 300;
       line-height: 1em;
       padding: 12px 8px;
       border-bottom: 1px solid #000;
@@ -208,20 +216,23 @@
 })();
 
 function runMain() {
+  buildMarkup();
   let root = document.getElementById("fcc_test_suite_wrapper").shadowRoot;
   let suit_ui = root.querySelector(".fcc_test_ui");
   let fcc_run_button = suit_ui.querySelector(
     "#fcc_test_message-box-rerun-button"
   );
+  let runner_container = document.getElementsByClassName("runner-container");
 
   (function init() {
-    buildMarkup();
-    handleButtonEvents();
-    let test_runner_btn = document.getElementById("test_runner");
+    let test_runner_btn = document.getElementById("test_runner_btn");
     let loader = document.querySelector(".loader-wrapper");
     const freecodecamp_mod = document.getElementById("freecodecamp_mod");
     const btns = freecodecamp_mod.querySelectorAll(".btn");
     const visible_state = getStorageVisibility();
+
+    handleButtonEvents();
+    attachSelector();
 
     if (!visible_state) {
       freecodecamp_mod.classList.add("hidden");
@@ -239,24 +250,6 @@ function runMain() {
       }, 1000);
     });
   })();
-
-  /* getStorageVisibility
-   *
-   * get FCC visible state from localStorage
-   */
-  function getStorageVisibility() {
-    // lazy parse - convert to boolean
-    return (localStorage.FCCMod_visible || "true") == "true";
-  }
-
-  /* setStorageVisibilty
-   *
-   * set FCC visible state from localStorage
-   */
-  function setStorageVisibilty(state = true) {
-    console.log("setting Visible state to", state);
-    localStorage.FCCMod_visible = state;
-  }
 
   /*
    * buildMarkup
@@ -277,7 +270,10 @@ function runMain() {
         <img src="https://cdn.rawgit.com/Deftwun/e3756a8b518cbb354425/raw/6584db8babd6cbc4ecb35ed36f0d184a506b979e/free-code-camp-logo.svg" width="25" height="25" style="background:#fff;">
         FCC Test Mod
         </h2>
-        <button id="test_runner">Run Test</button>
+        <div class="runner-container">
+         <br>
+         <button id="test_runner_btn">Run Test</button>
+        </div>
         <ul id="failure_list" class="result-list">     
         </ul>
        </div>
@@ -302,6 +298,30 @@ function runMain() {
     document.getElementsByTagName("body")[0].appendChild(main_element);
   }
 
+  function attachSelector() {
+    // FCC Suite Selector
+    const suite_selector = suit_ui.querySelector("#test-suite-selector");
+    // Mod Suite Selector
+    const mod_fcc_selector = suite_selector.cloneNode(true);
+    console.log({ mod_fcc_selector });
+    mod_fcc_selector.classList.add("mod_selector");
+
+    /* Send mod_fcc_selector change event to FCC Suite Selector and Vice-Versa
+       incase user uses the real Suite test instead of the mod_fcc_selector
+    */
+
+    // Send FCC_Suite Selector change event to mod_fcc_selector
+    suite_selector.addEventListener("change", function (e) {
+      mod_fcc_selector.value = this.value;
+    });
+    // Send mod_fcc_selector change event to FCC Suite Selector
+    mod_fcc_selector.addEventListener("change", function () {
+      const event = new Event("mod_change");
+      suite_selector.value = this.value;
+      suite_selector.dispatchEvent(event);
+    });
+    runner_container[0].prepend(mod_fcc_selector);
+  }
   /*
    * handleButtonEvents
    *
@@ -335,9 +355,9 @@ function runMain() {
    * to screen.
    */
   function handleFCCResults() {
-    let suit_test = root.querySelectorAll(".fcc_test_ui")[1];
-    const total_tests = suit_test.querySelectorAll(".test").length;
-    const failed_results = suit_test.querySelectorAll(".test.fail");
+    let suite_test = root.querySelectorAll(".fcc_test_ui")[1];
+    const total_tests = suite_test.querySelectorAll(".test").length;
+    const failed_results = suite_test.querySelectorAll(".test.fail");
     const result_list = document.getElementById("failure_list");
 
     // Verfiy  failed result and show current status
@@ -361,5 +381,23 @@ function runMain() {
       li.innerHTML = result.querySelector("h2").innerHTML;
       result_list.appendChild(li);
     });
+  }
+
+  /* getStorageVisibility
+   *
+   * get FCC visible state from localStorage
+   */
+  function getStorageVisibility() {
+    // lazy parse - convert to boolean
+    return (localStorage.FCCMod_visible || "true") == "true";
+  }
+
+  /* setStorageVisibilty
+   *
+   * set FCC visible state from localStorage
+   */
+  function setStorageVisibilty(state = true) {
+    console.log("setting Visible state to", state);
+    localStorage.FCCMod_visible = state;
   }
 }
