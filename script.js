@@ -74,6 +74,7 @@ function fetchFile(url) {
 async function runMain() {
   buildMarkup();
   await sleep(500);
+  document.getElementById("repo_link").href = REPO_BASE_URL;
   let root = document.getElementById("fcc_test_suite_wrapper").shadowRoot;
   let suit_ui = root.querySelector(".fcc_test_ui");
   let fcc_run_button = suit_ui.querySelector(
