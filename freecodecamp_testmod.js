@@ -189,12 +189,21 @@
   const fcc_is_loaded = document.querySelector(
     "script[src='https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js']"
   );
-  if (fcc_is_loaded) return;
+  if (fcc_is_loaded) {
+    // if loaded, just run Main script
+    runMain();
+    return;
+  }
+
   console.log("Loading FCC Suite Test Script");
   const fcc_script = document.createElement("script");
   fcc_script.src =
     "https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js";
-  fcc_script.on_load = runMain(); // Run Main script
+
+  // Give FCC Script time to load its script, then  Run Main script
+  fcc_script.on_load = setTimeout(() => runMain(), 1000);
+
+  // Attach FCC Test Suite script before the last body script ( which should be this script)
   document
     .getElementsByTagName("body")[0]
     .insertBefore(fcc_script, last_script[last_script.length || 0]);
@@ -228,7 +237,7 @@ function runMain() {
    * buildMarkup
    *
    *  Build main container for test results.
-   * /
+   */
   function buildMarkup() {
     const markup = `
        <div class="content-wrapper">
