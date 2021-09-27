@@ -9,16 +9,14 @@
  * @date: Sept 26, 2021
  */
 
-/* Show FreeCode Camp  Responsive HTML Error
-   
- */
+/* Show FreeCode Camp  Responsive HTML Error*/
 
 /* Injects css style */
 (function injectStyle() {
   var style = document.createElement("style");
   style.type = "text/css";
   style.innerHTML = `
-    #freecodecamp_result{ 
+    #freecodecamp_mod{ 
         position: fixed;
         top: 2px;
         right: 5px;
@@ -34,7 +32,7 @@
         transition: .3s ease-in-out;
         overflow: auto;
      }
-      #freecodecamp_result.hidden{
+      #freecodecamp_mod.hidden{
         dispay: grid;
         place-items: center;
         width: 32px;
@@ -45,20 +43,20 @@
         overflow: hidden;
       } 
 
-     #freecodecamp_result.hidden *:not(.content-wrapper,.btn-wrapper, .btn){
+     #freecodecamp_mod.hidden *:not(.content-wrapper,.btn-wrapper, .btn){
       display: none;
     } 
 
-    #freecodecamp_result #content-wrapper{ 
+    #freecodecamp_mod #content-wrapper{ 
       position: relative;
     }
 
-    #freecodecamp_result .btn-wrapper{ 
+    #freecodecamp_mod .btn-wrapper{ 
       position: absolute;
       top: 2px;
       left: 2px;
     }
-    #freecodecamp_result.hidden .btn-wrapper{ 
+    #freecodecamp_mod.hidden .btn-wrapper{ 
       position: absolute;
       top: -2px;
       left:0;
@@ -67,7 +65,7 @@
       margin: auto;
     }
 
-    #freecodecamp_result .btn{
+    #freecodecamp_mod .btn{
         display: none;
         opacity: 1;
         width: fit-content;
@@ -82,18 +80,18 @@
         text-shadow: 2px 2px 2px rgba(0,0,0,.5);
         transition: .2s ease-in-out;
     }
-    #freecodecamp_result .btn.active{
+    #freecodecamp_mod .btn.active{
       display: block;
     }
-    #freecodecamp_result #close_btn::before {
+    #freecodecamp_mod #close_btn::before {
         content: '\\2613';
     }
 
-    #freecodecamp_result .btn-wrapper #open_btn::before{
+    #freecodecamp_mod .btn-wrapper #open_btn::before{
       content: '\\2630';
     }
 
-    #freecodecamp_result .title{ 
+    #freecodecamp_mod .title{ 
       font-weight: 700;
       text-align: center;
       padding: 5px;
@@ -101,7 +99,7 @@
       background: #0a0a23;
       border-bottom: 2px solid #000;
     }
-    #freecodecamp_result #test_runner{
+    #freecodecamp_mod #test_runner{
       font-weight: 700;
       margin-left: 3px;
       color: #fff;
@@ -109,16 +107,16 @@
       border-radius: 4px;
       box-shadow: 2px 2px 8px rgba(0,0,0,.4);
     } 
-    #freecodecamp_result #test_runner:hover{
+    #freecodecamp_mod #test_runner:hover{
       background:#0a3a82;
     }
-    #freecodecamp_result #failure_list{
+    #freecodecamp_mod #failure_list{
      display: block;
      min-height: 145px;
      height: 100%;
      padding: 5px 0px 4px;
     }
-    #freecodecamp_result .result-item{
+    #freecodecamp_mod .result-item{
       list-style: none;
       color: #000;
       font-weight: 500;
@@ -126,36 +124,36 @@
       padding: 12px 8px;
       border-bottom: 1px solid #000;
     }
-    #freecodecamp_result .result-item:nth-child(even){
+    #freecodecamp_mod .result-item:nth-child(even){
       background: #fff;
     }
-    #freecodecamp_result #suite_footer{
+    #freecodecamp_mod #suite_footer{
       width:100%;
       text-align:center;
       background: #e9eabc;
       padding: 4px;
      }
 
-    #freecodecamp_result #suite_footer small {
+    #freecodecamp_mod #suite_footer small {
       color:333;
       font-size: .75em;
       font-weight:400;
       margin: 2px 6px;
       padding: 6px;
     }
-    #freecodecamp_result #suite_footer small a{
+    #freecodecamp_mod #suite_footer small a{
       transition: .2s ease-in;
       font-weight: 700;
       color: #0a0a23;
     }
-    #freecodecamp_result #suite_footer small a:hover{
+    #freecodecamp_mod #suite_footer small a:hover{
       color: #00f;
     }
 
-  #freecodecamp_result .loader-wrapper {
+  #freecodecamp_mod .loader-wrapper {
     display: none;
   }
-  #freecodecamp_result .loader-wrapper.active {
+  #freecodecamp_mod .loader-wrapper.active {
 
       position: absolute;
       top: 0;
@@ -165,7 +163,7 @@
       width: 100%;
       height: 100%;
   }
-  #freecodecamp_result .loader {
+  #freecodecamp_mod .loader {
     border: 8px solid #f3f3f3; /* Light grey */
     border-top: 8px solid #3498db; /* Blue */
     border-radius: 50%;
@@ -221,6 +219,15 @@ function runMain() {
     handleButtonEvents();
     let test_runner_btn = document.getElementById("test_runner");
     let loader = document.querySelector(".loader-wrapper");
+    const freecodecamp_mod = document.getElementById("freecodecamp_mod");
+    const btns = freecodecamp_mod.querySelectorAll(".btn");
+    const visible_state = getStorageVisibility();
+
+    if (!visible_state) {
+      freecodecamp_mod.classList.add("hidden");
+      btns.forEach((btn) => btn.classList.add("active"));
+      document.querySelector("#close_btn").classList.remove("active");
+    }
 
     test_runner_btn.addEventListener("click", () => {
       // Click the FCC Test Run Button
@@ -232,6 +239,24 @@ function runMain() {
       }, 1000);
     });
   })();
+
+  /* getStorageVisibility
+   *
+   * get FCC visible state from localStorage
+   */
+  function getStorageVisibility() {
+    // lazy parse - convert to boolean
+    return (localStorage.FCCMod_visible || "true") == "true";
+  }
+
+  /* setStorageVisibilty
+   *
+   * set FCC visible state from localStorage
+   */
+  function setStorageVisibilty(state = true) {
+    console.log("setting Visible state to", state);
+    localStorage.FCCMod_visible = state;
+  }
 
   /*
    * buildMarkup
@@ -271,10 +296,10 @@ function runMain() {
         </small>
       </div>
      `;
-    const result_element = document.createElement("div");
-    result_element.id = "freecodecamp_result";
-    result_element.innerHTML = markup;
-    document.getElementsByTagName("body")[0].appendChild(result_element);
+    const main_element = document.createElement("div");
+    main_element.id = "freecodecamp_mod";
+    main_element.innerHTML = markup;
+    document.getElementsByTagName("body")[0].appendChild(main_element);
   }
 
   /*
@@ -284,8 +309,9 @@ function runMain() {
    */
   function handleButtonEvents() {
     // Bind Close and open btn events
-    const freecodecamp_result = document.getElementById("freecodecamp_result");
-    const btns = freecodecamp_result.querySelectorAll(".btn");
+    const freecodecamp_mod = document.getElementById("freecodecamp_mod");
+    const btns = freecodecamp_mod.querySelectorAll(".btn");
+
     btns.forEach(function (btn) {
       btn.addEventListener("click", function () {
         btns.forEach((e) => e.classList.add("active"));
@@ -293,10 +319,12 @@ function runMain() {
 
         if (this.id == "close_btn") {
           // add hidden class to main container
-          freecodecamp_result.classList.add("hidden");
+          freecodecamp_mod.classList.add("hidden");
         } else {
-          freecodecamp_result.classList.remove("hidden");
+          freecodecamp_mod.classList.remove("hidden");
         }
+        // set storage visiblily according to the button clicked
+        setStorageVisibilty(this.id != "close_btn");
       });
     });
   }
